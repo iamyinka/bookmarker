@@ -3,14 +3,29 @@
 // Start Session
 session_start();
 
-if (isset($_POST['name'])) {
+if (isset($_POST['submit'])) {
+  $name = $_POST['name'];
+  $url = $_POST['url'];
   # code...
-  if (isset($_SESSION['bookmarks'])) {
+  if ($name == '' || $url == '') {
     # code...
-    $_SESSION['bookmarks'][$_POST['name']] = $_POST['url'];
-  } else {
-    $_SESSION['bookmarks'] = array($_POST['name'] =>  $_POST['url']);
+    $error = "One or more fields empty.";
+    $errorMsg = "<div class='alert alert-danger'>" .$error. "</div>";
+    $_SESSION['errorMsg'] = $errorMsg;
+    header("Location: index.php");
+    exit();
   }
+
+  if (isset($_POST['name'])) {
+    # code...
+    if (isset($_SESSION['bookmarks'])) {
+      # code...
+      $_SESSION['bookmarks'][$_POST['name']] = $_POST['url'];
+    } else {
+      $_SESSION['bookmarks'] = array($_POST['name'] =>  $_POST['url']);
+    }
+  }
+
 }
 
 if (isset($_GET['action']) && $_GET['action'] == 'delete') {
@@ -27,8 +42,8 @@ if (isset($_GET['action']) && $_GET['action'] == 'deleteAll') {
   exit();
 }
 
-
-
+// unset($_SESSION['errorMsg']);
+// var_dump($_SESSION);
 // if (isset($_POST['submit'])) {
 //   # code...
 //   if (isset($_SESSION['bookmarks'])) {
@@ -65,6 +80,10 @@ if (isset($_GET['action']) && $_GET['action'] == 'deleteAll') {
 
       .navbar {
         border-radius: 0;
+      }
+
+      form {
+        margin-bottom: 20px;
       }
     </style>
   </head>
@@ -112,6 +131,14 @@ if (isset($_GET['action']) && $_GET['action'] == 'deleteAll') {
 
             <input type="submit" name="submit" value="Bookmark" class="btn btn-primary btn-block">
           </form>
+
+          <?php
+            if (isset($_SESSION['errorMsg'])) {
+              # code...
+              echo $_SESSION['errorMsg'];
+              unset($_SESSION['errorMsg']);
+            }
+           ?>
         </div>
 
         <div class="col-md-5">
